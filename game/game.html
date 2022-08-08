@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        My Game
+    </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .main {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-select,
+        .score {
+            text-align: center;
+        }
+
+        .select span {
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .select .paper {
+            background: url('images/paper.jpg') center / cover;
+        }
+
+        .select .rock {
+            background: url('images/rock.jpg') center / cover;
+        }
+
+        .select .scissor {
+            background: url('images/scissor.jpg') center / cover;
+        }
+
+        .options {
+            opacity: 0.5;
+        }
+
+        .selectedOption {
+            opacity: 1;
+        }
+    </style>
+    <script>
+        let setting = {
+            maxTimer: 5000,
+            winnerScore: 3
+        }
+
+        let defaultSelected = "SCISSOR"
+        let gameStatus = "PAUSE"
+        let counterNumber = setting.maxTimer / 1000;
+        let choices = ["SCISSOR", "PAPER", "ROCK"];
+        let userSelectedOption = "SCISSOR";
+        let userScore = 0;
+        let pcScore = 0;
+
+        function checkScore() {
+
+            let pcChoice = choices[Math.floor(Math.random() * choices.length)]
+            document.getElementById("pcSelectBox").innerHTML = pcChoice
+            if (userSelectedOption == pcChoice) {
+                userScore += 0;
+                pcScore += 0;
+            } else
+                if (userSelectedOption == "PAPER" && pcChoice == "ROCK") {
+                    userScore++;
+                } else
+                    if (userSelectedOption == "ROCK" && pcChoice == "SCISSOR") {
+                        userScore++;
+                    }
+                    else
+                        if (userSelectedOption == "SCISSOR" && pcChoice == "PAPER") {
+                            userScore++;
+                        }
+
+
+                        else
+                            if (pcChoice == "PAPER" && userSelectedOption == "ROCK") {
+                                pcScore++;
+                            } else
+                                if (pcChoice == "ROCK" && userSelectedOption == "SCISSOR") {
+                                    pcScore++;
+                                }
+                                else
+                                    if (pcChoice == "SCISSOR" && userSelectedOption == "PAPER") {
+                                        pcScore++;
+                                    }
+            document.getElementById("yourScore").innerHTML = userScore;
+            document.getElementById("pcScore").innerHTML = pcScore;
+            if (userScore === setting.winnerScore) {
+                alert("TO BORDIO TO BORDI !!!")
+                window.location.reload()
+            } else if (pcScore === setting.winnerScore) {
+                alert("BAKHTI !")
+                window.location.reload()
+            } else {
+                setTimeout(() => {
+                    document.getElementById("pcSelectBox").innerHTML = ""
+                }, 2000)
+                intervalFunc()
+            }
+
+        }
+
+        let t;
+        function intervalFunc() {
+
+            t = setInterval(() => {
+                if (gameStatus === "PAUSE") {
+                    clearInterval(t)
+                } else {
+                    document.getElementById("counterBox").innerHTML = counterNumber;
+                    counterNumber = counterNumber - 1;
+                    if (counterNumber === -1) {
+                        checkScore()
+                        counterNumber = setting.maxTimer / 1000
+                        clearInterval(t)
+                    }
+                }
+
+            }, 1000)
+        }
+        function counter() {
+            intervalFunc()
+        }
+        function startTimer() {
+            if (gameStatus === "PAUSE") {
+                document.getElementById("gameStatusButton").innerHTML = "Pause"
+                gameStatus = "STARTED"
+                counter()
+            } else {
+                document.getElementById("gameStatusButton").innerHTML = "Start"
+
+                gameStatus = "PAUSE"
+            }
+        }
+
+        function selectedOption(option) {
+            switch (option) {
+                case "PAPER":
+                    userSelectedOption = "PAPER";
+                    document.getElementById("PAPER").className = "paper options selectedOption"
+                    document.getElementById("Rock").className = "rock options"
+                    document.getElementById("Scissor").className = "scissor options"
+                    break;
+                case "ROCK":
+                    userSelectedOption = "ROCK";
+                    document.getElementById("PAPER").className = "paper options"
+                    document.getElementById("Rock").className = "rock options selectedOption"
+                    document.getElementById("Scissor").className = "scissor options"
+                    break;
+                case "SCISSOR":
+                    userSelectedOption = "SCISSOR";
+                    document.getElementById("PAPER").className = "paper options"
+                    document.getElementById("Rock").className = "rock options"
+                    document.getElementById("Scissor").className = "scissor options selectedOption"
+                    break;
+                default:
+                    console.log(option)
+            }
+
+        }
+        function reset() {
+            gameStatus = "PAUSE";
+            document.getElementById("gameStatusButton").innerHTML = "Start"
+            document.getElementById("pcSelectBox").innerHTML = ""
+            clearInterval(t)
+            userSelectedOption = "SCISSOR";
+            selectedOption("SCISSOR")
+            userScore = 0;
+            pcScore = 0;
+            counterNumber = setting.maxTimer / 1000;
+            document.getElementById("counterBox").innerHTML = "";
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="main">
+        <p class="turn" style="color: purple;">Your Select:</p>
+        <div class="select user">
+            <span class="paper options" onclick="selectedOption('PAPER')" id="PAPER"></span>
+            <span class="rock options" onclick="selectedOption('ROCK')" id="Rock"></span>
+            <span class="scissor options selectedOption" onclick="selectedOption('SCISSOR')" id="Scissor"></span>
+        </div>
+        <p class="turn" style="color: purple;">Pc Select:</p>
+        <div class="select pc">
+            <span id="pcSelectBox"></span>
+        </div>
+        <div class="score">
+            user score: <span class="yourScore" id="yourScore">0</span><br>
+            pc score : <span class="pcScore" id="pcScore">0</span><br>
+        </div>
+        <button onclick="startTimer()" id="gameStatusButton">Start</button>
+        <div id="counterBox"></div>
+    </div>
+</body>
+
+</html>
